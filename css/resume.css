@@ -100,8 +100,13 @@ p.lead {
   color: #FF6188;
 }
 
-#lastName {
-  color: #45BAE8;
+#lastName, #me {
+  color: #45BAE8 !important;
+}
+
+#addr {
+  color: #ffb947
+  /* color: #495057 */
 }
 
 @media (min-width: 992px) {
@@ -187,11 +192,19 @@ section.resume-section .resume-item .resume-date {
 }
 
 .bg-primary {
-  background-color: #66cc72 !important;
+  background-color: #221f22 !important;
 }
 
 .text-primary {
   color: #66cc72 !important;
+}
+
+section.resume-section .subheading.mb-3 {
+  color: #919df2;
+}
+
+div.resume-date.text-md-right .text-primary {
+  color: #ffb947 !important;
 }
 
 a {
