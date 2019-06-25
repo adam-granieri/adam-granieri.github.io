@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
 
     <!-- Custom styles for this template -->
-    <link href="css/resume.css" rel="stylesheet">
+    <link type="text/css" href="css/resume.css" rel="stylesheet" id="dark">
 
   </head>
 
@@ -65,6 +65,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="changeStyle()">Dark Mode</a>
           </li>
         </ul>
       </div>

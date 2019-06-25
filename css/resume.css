@@ -1,16 +1,7 @@
-/*!
- * Start Bootstrap - Resume v5.0.2 (https://startbootstrap.com/template-overviews/resume)
- * Copyright 2013-2018 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-resume/blob/master/LICENSE)
- */
-
-/* Edited from original version */
-
 body {
   font-family: 'Muli', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   padding-top: 54px;
-  color: #DCDDDD;
-  background-color: #2D2A2E;
+  color: #868e96;
 }
 
 @media (min-width: 992px) {
@@ -29,7 +20,7 @@ h6 {
   font-family: 'Saira Extra Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   font-weight: 700;
   text-transform: uppercase;
-  color: #FF6188;
+  color: #343a40;
 }
 
 h1 {
@@ -94,19 +85,6 @@ p.lead {
 
 #sideNav .navbar-toggler:focus {
   outline-color: #d48a6e;
-}
-
-#firstName {
-  color: #FF6188;
-}
-
-#lastName, #me {
-  color: #45BAE8 !important;
-}
-
-#addr {
-  color: #ffb947
-  /* color: #495057 */
 }
 
 @media (min-width: 992px) {
@@ -192,21 +170,17 @@ section.resume-section .resume-item .resume-date {
 }
 
 .bg-primary {
-  background-color: #221f22 !important;
+  background-color: #66cc72 !important;
 }
 
 .text-primary {
   color: #66cc72 !important;
 }
 
-section.resume-section .subheading.mb-3 {
-  color: #919df2;
-}
-
-div.resume-date.text-md-right .text-primary {
-  color: #ffb947 !important;
-}
-
 a {
   color: #66cc72;
+}
+
+a:hover, a:focus, a:active {
+  color: #824027;
 }

@@ -26,3 +26,8 @@
   });
 
 })(jQuery); // End of use strict
+
+function changeStyle() {
+  var link = document.getElementById('dark');
+  link.setAttribute('href', 'dark.css');
+}
