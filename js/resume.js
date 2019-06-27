@@ -27,7 +27,13 @@
 
 })(jQuery); // End of use strict
 
-function changeStyle() {
-  var link = document.getElementById('dark');
-  link.setAttribute('href', 'dark.css');
+function changeStyle(cssFile, cssLinkIndex) {
+  var oldLink = document.getElementsByTagName("link").item(cssLinkIndex);
+  
+  var newLink = document.createElement("link");
+  newLink.setAttribute("rel","stylesheet");
+  newLink.setAttribute("type","text/css");
+  newLink.setAttribute("href", cssFile);
+
+  document.getElementsByTagName("head").item(0).replaceChild(newLink, oldLink);
 }

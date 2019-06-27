@@ -77,6 +77,10 @@ p.lead {
   color: #66cc72;
 }
 
+.color-scheme {
+  cursor: pointer;
+}
+
 #sideNav .navbar-nav .nav-item .nav-link {
   font-weight: 800;
   letter-spacing: 0.05rem;

@@ -79,6 +79,10 @@ body {
   .dev-icons .list-inline-item i:hover {
     color: #66cc72;
   }
+
+  .color-scheme {
+    cursor: pointer;
+  }
   
   #sideNav .navbar-nav .nav-item .nav-link {
     font-weight: 800;
