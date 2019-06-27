@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
 
     <!-- Custom styles for this template -->
-    <link href="css/resume.css" rel="stylesheet">
+    <link type="text/css" href="css/resume.css" rel="stylesheet" id="dark">
 
   </head>
 
@@ -66,6 +66,12 @@
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link color-scheme" onclick="changeStyle('css/dark.css',5);">Dark Mode</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link color-scheme" onclick="changeStyle('css/resume.css',5);">Light Mode</a>
+          </li>
         </ul>
       </div>
     </nav>
@@ -74,10 +80,10 @@
 
       <section class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
         <div class="my-auto">
-          <h1 class="mb-0">Adam
-            <span class="text-primary">Granieri</span>
+          <h1 class="mb-0"  id="firstName">Adam
+            <span id="lastName">Granieri</span>
           </h1>
-          <div class="subheading mb-5">Pittsburgh, PA 15213 · (610) 888-3828 ·
+          <div class="subheading mb-5" id="addr">Pittsburgh, PA 15213 · (610) 888-3828 ·
             <a href="mailto:adg88@pitt.edu">adg88@pitt.edu</a>
           </div>
           <p class="lead mb-5">I'm a current Junior at the University of Pittsburgh pursuing a Bachelor's degree in Computer Engineering. 
@@ -86,7 +92,7 @@
             There I taught introductory classes on programming in Java and Python, CADD with 3D printing, and VR game development in Unreal Engine.  
             Currently at school, I am a Lead Resident Assistant for Litchfield Tower A in addition to my regular studies.</p>
           <div class="social-icons">
-            <a href="https://www.linkedin.com/in/adam-granieri-ab53b7137/">
+            <a href="https://www.linkedin.com/in/adam-granieri">
               <i class="fab fa-linkedin-in"></i>
             </a>
             <a href="https://github.com/adam-granieri">
@@ -214,6 +220,9 @@
               <i class="devicon-javascript-plain"></i>
             </li>
             <li class="list-inline-item">
+              <i class="devicon-typescript-plain"></i>
+            </li>
+            <li class="list-inline-item">
               <i class="devicon-c-plain"></i>
             </li>
             <li class="list-inline-item">
@@ -225,6 +234,18 @@
             <li class="list-inline-item">
               <i class="devicon-ruby-plain"></i>
             </li>
+            <li class="list-inline-item">
+              <i class="devicon-angularjs-plain"></i>
+            </li>
+            <li class="list-inline-item">
+              <i class="devicon-csharp-plain"></i>
+            </li>
+            <li class="list-inline-item">
+              <i class="devicon-dot-net-plain"></i>
+            </li>
+            <li class="list-inline-item">
+              <i class="devicon-nodejs-plain"></i>
+            </li>
           </ul>
       </section>
 
@@ -232,7 +253,7 @@
 
       <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="interests">
         <div class="my-auto">
-          <h2 class="mb-5">Interests &amp; About Me</h2>
+          <h2 class="mb-5">Interests &amp; <span id="me">About Me</span></h2>
           <p>At Pitt, I&#39;m a part of a few organizations.  Primarily, I am the Lead Resident Assistant this year for first-year 
               students in Litchfield Tower A.  I took on this role after having an amazing experience as a regular RA for the 
               First Year Engineering Living Learning Community (LLC) last year and wanted to challenge myself in &#39;soft&#39; skill areas.  
