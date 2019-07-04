@@ -106,6 +106,10 @@ body {
     color: #ffb947
     /* color: #495057 */
   }
+
+  #darkButton {
+    display: none;
+  }
   
   @media (min-width: 992px) {
     #sideNav {

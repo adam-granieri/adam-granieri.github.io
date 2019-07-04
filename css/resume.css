@@ -91,6 +91,10 @@ p.lead {
   outline-color: #d48a6e;
 }
 
+#lightButton {
+  display: none;
+}
+
 @media (min-width: 992px) {
   #sideNav {
     text-align: center;
