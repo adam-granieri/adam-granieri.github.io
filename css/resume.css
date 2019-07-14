@@ -92,7 +92,7 @@ p.lead {
 }
 
 #lightButton {
-  display: none;
+  display: none !important;
 }
 
 @media (min-width: 992px) {
