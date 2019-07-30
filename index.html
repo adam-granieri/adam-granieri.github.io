@@ -12,7 +12,6 @@
       gtag('config', 'UA-138982672-1');
     </script>
 
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Adam Granieri">
@@ -33,7 +32,10 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
 
     <!-- Custom styles for this template -->
-    <link type="text/css" href="css/resume.css" rel="stylesheet" id="dark">
+    <link type="text/css" href="css/resume.css" rel="stylesheet" title="light">
+    <link type="text/css" href="css/dark.css" rel="alternate stylesheet" title="dark">
+    <link rel="shortcut icon" type="img/ico" href="img/favicon.ico"/>
+
 
   </head>
 
@@ -67,10 +69,11 @@
             <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link color-scheme" onclick="changeStyle('css/dark.css',5);">Dark Mode</a>
+            <a class="nav-link color-scheme" onclick="setActiveStyleSheet('dark')" id="darkButton">Toggle Theme</a>
+            <a class="nav-link color-scheme" onclick="setActiveStyleSheet('light')" id="lightButton">Toggle Theme</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link color-scheme" onclick="changeStyle('css/resume.css',5);">Light Mode</a>
+            <a class="nav-link color-scheme" href="demo.html">three.js demo</a>
           </li>
         </ul>
       </div>
