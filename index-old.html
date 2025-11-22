@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-138982672-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-138982672-1');
+  </script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Adam Granieri">
+  <meta name="description" content="Adam Granieri - Software Engineer Portfolio">
+  <meta name="keywords" content="adg88, Adam Granieri, University of Pittsburgh, Pitt, Swanson School of Engineering, Software Engineer">
+  <meta name="color-scheme" content="light dark">
+
+  <title>Adam Granieri</title>
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="css/modern-resume.css" as="style">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Modern fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom styles -->
+  <link href="css/modern-resume.css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico">
+
+</head>
+
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav-brand">
+      <img src="img/profile.jpg" alt="Adam Granieri" class="nav-avatar">
+      <span class="nav-name">Adam Granieri</span>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#experience" class="nav-link">Experience</a></li>
+      <li><a href="#education" class="nav-link">Education</a></li>
+      <li><a href="#skills" class="nav-link">Skills</a></li>
+      <li><a href="#interests" class="nav-link">Interests</a></li>
+      <li><button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-moon" id="themeIcon"></i> Toggle Theme
+      </button></li>
+      <li><a href="demo.html" class="nav-link demo-link">Three.js Demo</a></li>
+    </ul>
+    
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <main class="main">
+
+    <section class="section" id="about">
+      <div class="my-auto">
+        <h1 class="mb-0" id="firstName">Adam
+          <span id="lastName">Granieri</span>
+        </h1>
+        <div class="subheading mb-5" id="addr">Philadelphia, PA</div>
+        <!-- TODO: Edit this section -->
+        <p class="lead mb-5">Hey there! I'm a Computer Engineering enthusiast and a proud graduate of the University of
+          Pittsburgh. My journey thus far has taken me through exciting roles, from crafting software solutions at
+          Roadrunner
+          Recycling, where I worked on smarter waste management, to working on supporting merchant systems during my
+          internship at Dick’s Sporting Goods. I've even had the chance to explore the tech
+          scene internationally at Infosys Limited in Bangalore, India, where I delved into WebVR. But it hasn't all
+          code and hardware – I've led wonderful teams as a Resident Assistant, organizing events and fostering
+          tight-knit communities. Below is the cataloged journey through my portfolio, where I share the work and
+          experiences that define my love for tech and problem-solving!</p>
+        <div class="social-icons">
+          <a href="https://www.linkedin.com/in/adam-granieri">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a href="https://github.com/adam-granieri">
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="experience">
+      <div class="section-content">
+        <h2 class="section-title">Experience</h2>
+        <div class="timeline">
+
+        <div class="resume-item d-flex flex-column flex-md-row mb-5">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">Software Engineer</h3>
+            <div class="subheading mb-3">RoadRunner Recycling</div>
+            <p>
+              I worked on a number of projects around invoicing, pricing and data visualization. These were to support
+              various
+              teams across the organization both customer-facing and internal-only. Additionally I co-led an engineering
+              process
+              development on a new product focused team stucture as the department multiplied in size.
+              When I was a level 1, I got to build some useful tools into our existing backend infrasture like an
+              foreign table "order by"
+              functionality for our graph to do more complex queries from our frontend. Additionally I contributed a
+              number of lifecycle
+              changes to de-normalize a number of different associations for performance improvements.
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">June 2020 - Present</span>
+          </div>
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row mb-5">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">Software Engineering Intern</h3>
+            <div class="subheading mb-3">Dick's Sporting Goods</div>
+            <p>
+              Worked on an agile team of 6 engineers to develop an internal order management app.
+              Individually developed a dashboard display by leveraging angular and material design.
+              Integrated order management functionality with existing legacy backend systems.
+              Wrote custom API endpoints with .NET and Entity Framework in C#.
+              Participated in daily SCRUM stand-ups.
+              Increased user productivity by eliminating multi-step process in legacy application.
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">May 2019 - August 2019</span>
+          </div>
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row mb-5">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">Lead Resident Assistant</h3>
+            <div class="subheading mb-3">University of Pittsburgh, Office of Residence Life</div>
+            <p>
+              Served as the primary resource and guide for 17 Resident Assistants for a first-year residence hall of 639
+              students.
+              Scheduled duty and programming for all Resident Assistants within the building for every weekend.
+              Tracked and reported on programming trends within the building to the Resident Director.
+              Collaborated with professional staff to support campus-wide programs and events.
+              Supported the Resident Director with the Health Science and Emerging Leaders Living Learning Communities.
+              Lead the Resident Assistant team to develop peer-to-peer accountability.
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">August 2018 - April 2019</span>
+          </div>
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row mb-5">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">AR/VR Engineering Intern</h3>
+            <div class="subheading mb-3">Infosys</div>
+            <p>
+              Developed a WebVR app for viewing different internal 3D model filetypes.
+              Devised 3 different workflows for developing 3D animations within the app and made formal recommendations.
+              Collaborated on a team of 5 engineers to conduct benchmarks and analysis on animation performance.
+              Presented on 3D animation inside of a JavaScript web framework around WebGL.
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">June 2018 - July 2018</span>
+          </div>
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row mb-5">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">Resident Assistant</h3>
+            <div class="subheading mb-3">University of Pittsburgh, Office of Residence Life</div>
+            <p>
+              Served as a main resource for 56 first year engineering residents to connect with campus resources and
+              opportunities.
+              Advised residents to aid in navigating their first year and to cultivate a respectful community.
+              Planned and executed experiential programming in conjunction with the Swanson School of Engineering.
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">August 2017 - April 2018</span>
+          </div>
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">Technical Instructor</h3>
+            <div class="subheading mb-3">Lavner Camps!</div>
+            <p>
+              Taught different 1-week classes to 12-20 elementary and junior high school students on topics ranging from
+              programming with java and python to 3D modelling and VR.
+              Created and taught a new introduction to VR Development and Applications class for advanced camp students.
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">June 2017 - August 2017</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <hr class="m-0">
+
+    <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="education">
+      <div class="my-auto">
+        <h2 class="mb-5">Education</h2>
+
+        <div class="resume-item d-flex flex-column flex-md-row mb-5">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">University of Pittsburgh</h3>
+            <div class="subheading mb-3">Bachelor of Science in Engineering</div>
+            <div>Computer Engineering</div>
+            <p>Cum Laude</p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">August 2016 - April 2020</span>
+          </div>
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row">
+          <div class="resume-content mr-auto">
+            <h3 class="mb-0">Lower Merion High School</h3>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">August 2012 - June 2016</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <hr class="m-0">
+
+    <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="skills">
+      <div class="my-auto">
+        <h2 class="mb-5">Skills</h2>
+
+        <div class="subheading mb-3">Programming Languages &amp; Tools</div>
+        <ul class="list-inline dev-icons">
+
+          <li class="list-inline-item">
+            <i class="devicon-typescript-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-c-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-arduino-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-docker-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-graphql-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-matlab-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-postgresql-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-rails-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-threejs-original"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-opencv-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-react-original"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-git-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-ruby-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-csharp-plain"></i>
+          </li>
+          <li class="list-inline-item">
+            <i class="devicon-nodejs-plain"></i>
+          </li>
+        </ul>
+    </section>
+
+    <hr class="m-0">
+
+    <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="interests">
+      <div class="my-auto">
+        <h2 class="mb-5">Interests &amp; <span id="me">About Me</span></h2>
+        <p>At Pitt, I was a part of a few organizations. I was the founding Treasurer for the Association for Computing
+          Machinery (ACM) at Pitt.
+          I was the Lead Resident Assistant this year for first-year
+          students in Litchfield Tower A. I took on this role after having an amazing experience as a regular RA for the
+          First Year Engineering Living Learning Community (LLC) the year prior and wanted to challenge myself in
+          &#39;soft&#39; skill areas.
+        <p class="mb-0">Outside of school I am a huge vegetarian foodie, exploring the restaurant scene wherever I may
+          be.
+          It was one one of my favorite things to do when I was living in Pittsburgh.
+          I also love film, books, video games, or anything that tells a great story. My family has a self-proclaimed
+          weakness for
+          anything epic and I&#39;m no different. Computer Hardware was what launched my initial interest in Computer
+          Engineering, so you
+          can surely find me reading some article on any particular consumer electronic advancement at any point in the
+          day.</p>
+        <br />
+      </div>
+    </section>
+
+    <hr class="m-0">
+  </div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="js/resume.js"></script>
+
+</body>
+
+</html>

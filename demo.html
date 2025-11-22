@@ -1,21 +1,121 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>three.js demo</title>
-    <style>
-      body {
-        margin: 0;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
-  </head>
-  <body id="AdamContainer">
-    <script src="js/three.js"></script>
-    <!-- <script src="js/2.js"></script> -->
-    <script src="js/demo.js"></script>
-  </body>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Three.js Interactive 3D Game Demo by Adam Granieri">
+  <meta name="color-scheme" content="light dark">
+  <title>Three.js Demo - Adam Granieri</title>
+
+  <style>
+    :root {
+      --color-bg: light-dark(#FCFCFA, #2D2A2E);
+      --color-text: light-dark(#2D2A2E, #FCFCFA);
+      --color-argument: #FC9867;
+      --color-function: #A9DC76;
+      --color-constant: #AB9DF2;
+      --color-class: #78DCE8;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #2D2A2E;
+      --color-text: #FCFCFA;
+    }
+
+    [data-theme="light"] {
+      --color-bg: #FCFCFA;
+      --color-text: #2D2A2E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100vh;
+      display: block;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--color-argument), var(--color-function));
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 4px 20px color-mix(in srgb, var(--color-argument) 30%, transparent),
+        inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
+    }
+
+    .back-link:hover {
+      background: linear-gradient(135deg, var(--color-function), var(--color-constant));
+      transform: translateY(-3px) scale(1.05);
+      box-shadow:
+        0 8px 30px color-mix(in srgb, var(--color-argument) 50%, transparent),
+        inset 0 1px 0 color-mix(in srgb, white 30%, transparent);
+    }
+
+    .instructions {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg,
+          color-mix(in srgb, var(--color-bg) 90%, transparent),
+          color-mix(in srgb, var(--color-bg) 95%, transparent));
+      color: var(--color-text);
+      padding: 20px;
+      border-radius: 15px;
+      font-size: 14px;
+      backdrop-filter: blur(20px);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      box-shadow:
+        0 8px 30px color-mix(in srgb, var(--color-text) 20%, transparent),
+        inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
+    }
+
+    .instructions h4 {
+      margin: 0 0 12px 0;
+      background: linear-gradient(135deg, var(--color-argument), var(--color-function));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body id="AdamContainer">
+  <a href="index.html" class="back-link">← Back to Portfolio</a>
+
+  <div class="instructions">
+    <h4>Controls:</h4>
+    <p>← → Arrow keys to move<br>
+      ↑ Arrow key to jump<br>
+      Avoid the trees!</p>
+  </div>
+
+  <script src="js/three.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+
 </html>
