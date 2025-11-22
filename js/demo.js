@@ -1,490 +1,478 @@
-//import * as THREE from 'three'
-var dom;
-var sun;
-var ground;
-var rollingGround;
-var hero;
-var worldRollSpeed = 0.008;
-var heroRollSpeed;
-var worldRadius = 26;
-var heroRadius = 0.2;
-var sphereHelper;
-var pathAngles;
-var heroBaseY = 1.8;
-var bounceVal = 0.1;
-var gravity = 0.005;
-var leftLane = -1;
-var rightLane = 1;
-var middleLane = 0;
-var currLane;
-var clock;
-var jump;
-var treeGenInterval = 0.5;
-var lastTreeTime = 0;
-var treesInView;
-var totalTrees;
-var particleGeometry;
-var particleCount = 20;
-var explosionPower = 1.06;
-var particles, scoreText, score, hasCollided;
-
-// Three.js elements
-var sceneWidth, sceneHeight, camera, scene, renderer;
-
-// Function Calls
-init();
-
-// Function Definitions
-function init() {
-  createScene();
-  animate();
-}
-
-function animate() {
-  rollingGround.rotation.x += worldRollSpeed;
-  hero.rotation.x -= heroRollSpeed;
-  if (hero.position.y <= heroBaseY) {
-    jump = false;
-    bounceVal = Math.random() * 0.04 + 0.005;
+/**
+ * Simple Three.js Infinite Runner Game
+ * Player dodges obstacles and racks up points for survival time
+ */
+class InfiniteRunner {
+  constructor() {
+    // Game settings
+    this.gameSpeed = 0.15;
+    this.lanes = [-2, 0, 2]; // Left, Center, Right positions
+    this.currentLane = 1; // Start in center (index 1)
+    
+    // Game state
+    this.score = 0;
+    this.gameRunning = true;
+    this.obstacles = [];
+    this.scoreTime = 0;
+    this.targetX = 0; // For smooth player movement
+    
+    // Three.js objects
+    this.scene = null;
+    this.camera = null;
+    this.renderer = null;
+    this.player = null;
+    this.ground = null;
+    this.scoreElement = null;
+    this.gameOverDiv = null;
+    
+    this.init();
   }
 
-  hero.position.y += bounceVal;
-  hero.position.x = THREE.Math.lerp(
-    hero.position.x,
-    currLane,
-    2 * clock.getDelta()
-  );
-  bounceVal -= gravity;
-  if (clock.getElapsedTime() > treeGenInterval) {
-    clock.start();
-    addTreeInPath();
-    if (!hasCollided) {
-      score += 2 * treeGenInterval;
-      scoreText.innerHTML = score.toString;
+  init() {
+    console.log('Starting new infinite runner...');
+    this.setupScene();
+    this.createPlayer();
+    this.createGround();
+    this.setupLighting();
+    this.setupUI();
+    this.setupControls();
+    this.gameLoop();
+  }
+
+  setupScene() {
+    // Create scene
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x87CEEB); // Sky blue
+    
+    // Create camera
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera.position.set(0, 5, 8);
+    this.camera.lookAt(0, 0, 0);
+    
+    // Create renderer
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    // Add to DOM
+    const container = document.getElementById('AdamContainer');
+    container.appendChild(this.renderer.domElement);
+    
+    // Handle window resize
+    window.addEventListener('resize', () => this.onWindowResize());
+  }
+
+  createPlayer() {
+    // Create a spaceship-like player using a group of geometries
+    this.player = new THREE.Group();
+    
+    // Main body (diamond shape)
+    const bodyGeometry = new THREE.ConeGeometry(0.3, 0.8, 4);
+    const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x00ff88 });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.rotation.z = Math.PI / 2;
+    body.castShadow = true;
+    this.player.add(body);
+    
+    // Wings
+    const wingGeometry = new THREE.BoxGeometry(0.1, 0.6, 0.1);
+    const wingMaterial = new THREE.MeshLambertMaterial({ color: 0x0066ff });
+    const leftWing = new THREE.Mesh(wingGeometry, wingMaterial);
+    leftWing.position.set(0, 0.3, 0);
+    leftWing.castShadow = true;
+    const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+    rightWing.position.set(0, -0.3, 0);
+    rightWing.castShadow = true;
+    this.player.add(leftWing);
+    this.player.add(rightWing);
+    
+    // Cockpit
+    const cockpitGeometry = new THREE.SphereGeometry(0.15, 8, 6);
+    const cockpitMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+    const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial);
+    cockpit.position.set(0.2, 0, 0);
+    cockpit.castShadow = true;
+    this.player.add(cockpit);
+    
+    this.player.position.set(this.lanes[this.currentLane], 0.5, 0);
+    this.scene.add(this.player);
+  }
+
+  createGround() {
+    // Change scene background to space
+    this.scene.background = new THREE.Color(0x000011);
+    
+    // Create animated starfield
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 1000;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+    
+    for (let i = 0; i < starCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 200;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 400 - 200;
+      
+      // Random star colors
+      const color = new THREE.Color();
+      color.setHSL(Math.random(), 0.5 + Math.random() * 0.5, 0.5 + Math.random() * 0.5);
+      colors[i * 3] = color.r;
+      colors[i * 3 + 1] = color.g;
+      colors[i * 3 + 2] = color.b;
+    }
+    
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    const starMaterial = new THREE.PointsMaterial({ 
+      size: 2, 
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    this.stars = new THREE.Points(starGeometry, starMaterial);
+    this.scene.add(this.stars);
+    
+    // Create subtle ground plane for reference
+    const geometry = new THREE.PlaneGeometry(20, 100);
+    const material = new THREE.MeshLambertMaterial({ 
+      color: 0x111133,
+      transparent: true,
+      opacity: 0.3
+    });
+    this.ground = new THREE.Mesh(geometry, material);
+    this.ground.rotation.x = -Math.PI / 2;
+    this.ground.receiveShadow = true;
+    this.scene.add(this.ground);
+  }
+
+  setupLighting() {
+    // Ambient light (darker for space atmosphere)
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+    this.scene.add(ambientLight);
+    
+    // Main directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 10, 5);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 1024;
+    directionalLight.shadow.mapSize.height = 1024;
+    this.scene.add(directionalLight);
+    
+    // Add colored accent lights for space atmosphere
+    const blueLight = new THREE.PointLight(0x0088ff, 0.5, 15);
+    blueLight.position.set(-5, 3, 0);
+    this.scene.add(blueLight);
+    
+    const redLight = new THREE.PointLight(0xff4488, 0.5, 15);
+    redLight.position.set(5, 3, 0);
+    this.scene.add(redLight);
+    
+    // Purple accent light
+    const purpleLight = new THREE.PointLight(0x8844ff, 0.3, 10);
+    purpleLight.position.set(0, 5, -5);
+    this.scene.add(purpleLight);
+  }
+
+  setupUI() {
+    // Create score display
+    this.scoreElement = document.createElement('div');
+    this.scoreElement.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 24px;
+      font-family: 'Inter', Arial, sans-serif;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    `;
+    this.scoreElement.textContent = 'Score: 0';
+    document.body.appendChild(this.scoreElement);
+
+
+  }
+
+  setupControls() {
+    document.addEventListener('keydown', (event) => {
+      switch(event.key) {
+        case 'ArrowLeft':
+          if (this.gameRunning && this.currentLane > 0) {
+            this.currentLane--;
+            this.movePlayer();
+          }
+          break;
+        case 'ArrowRight':
+          if (this.gameRunning && this.currentLane < this.lanes.length - 1) {
+            this.currentLane++;
+            this.movePlayer();
+          }
+          break;
+        case 'r':
+        case 'R':
+          this.restart();
+          break;
+      }
+      event.preventDefault();
+    });
+  }
+
+  movePlayer() {
+    // Smooth movement to new lane
+    const targetX = this.lanes[this.currentLane];
+    this.targetX = targetX; // Store target for smooth interpolation
+  }
+
+  createObstacle() {
+    const obstacleType = Math.random();
+    let obstacle;
+    
+    if (obstacleType < 0.4) {
+      // Spiky asteroid
+      const geometry = new THREE.SphereGeometry(0.4 + Math.random() * 0.3, 8, 6);
+      // Make it spiky by displacing vertices
+      const vertices = geometry.attributes.position.array;
+      for (let i = 0; i < vertices.length; i += 3) {
+        const spike = 1 + Math.random() * 0.5;
+        vertices[i] *= spike;
+        vertices[i + 1] *= spike;
+        vertices[i + 2] *= spike;
+      }
+      geometry.attributes.position.needsUpdate = true;
+      geometry.computeVertexNormals();
+      
+      const material = new THREE.MeshLambertMaterial({ color: 0xff4444 });
+      obstacle = new THREE.Mesh(geometry, material);
+    } else if (obstacleType < 0.7) {
+      // Crystal formations
+      obstacle = new THREE.Group();
+      for (let i = 0; i < 3 + Math.random() * 3; i++) {
+        const crystalGeometry = new THREE.ConeGeometry(0.1 + Math.random() * 0.2, 0.5 + Math.random() * 0.8, 6);
+        const crystalMaterial = new THREE.MeshLambertMaterial({ color: 0x8844ff });
+        const crystal = new THREE.Mesh(crystalGeometry, crystalMaterial);
+        crystal.position.set(
+          (Math.random() - 0.5) * 0.8,
+          Math.random() * 0.5,
+          (Math.random() - 0.5) * 0.8
+        );
+        crystal.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        );
+        crystal.castShadow = true;
+        obstacle.add(crystal);
+      }
+    } else {
+      // Spinning cube clusters
+      obstacle = new THREE.Group();
+      for (let i = 0; i < 4; i++) {
+        const cubeGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+        const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xff8800 });
+        const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        const angle = (i / 4) * Math.PI * 2;
+        cube.position.set(Math.cos(angle) * 0.3, 0, Math.sin(angle) * 0.3);
+        cube.castShadow = true;
+        obstacle.add(cube);
+      }
+    }
+    
+    // Random lane
+    const randomLane = Math.floor(Math.random() * this.lanes.length);
+    obstacle.position.set(this.lanes[randomLane], 0.7, -15);
+    
+    // Add rotation properties for animation
+    obstacle.userData = {
+      rotationSpeed: {
+        x: (Math.random() - 0.5) * 0.1,
+        y: (Math.random() - 0.5) * 0.1,
+        z: (Math.random() - 0.5) * 0.1
+      }
+    };
+    
+    this.obstacles.push(obstacle);
+    this.scene.add(obstacle);
+  }
+
+  updateObstacles() {
+    for (let i = this.obstacles.length - 1; i >= 0; i--) {
+      const obstacle = this.obstacles[i];
+      obstacle.position.z += this.gameSpeed;
+      
+      // Animate obstacle rotation
+      if (obstacle.userData && obstacle.userData.rotationSpeed) {
+        obstacle.rotation.x += obstacle.userData.rotationSpeed.x;
+        obstacle.rotation.y += obstacle.userData.rotationSpeed.y;
+        obstacle.rotation.z += obstacle.userData.rotationSpeed.z;
+      }
+      
+      // Remove obstacles that are behind the camera
+      if (obstacle.position.z > 10) {
+        this.scene.remove(obstacle);
+        this.obstacles.splice(i, 1);
+      }
+      
+      // Check collision with player
+      if (this.checkCollision(this.player, obstacle)) {
+        this.gameOver();
+        return; // Stop processing once game is over
+      }
     }
   }
 
-  treeLogic();
-  explosionLogic();
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-}
-
-function createScene() {
-  // Initialize values
-  hasCollided = false;
-  score = 0;
-  treesInView = [];
-  totalTrees = [];
-  clock = new THREE.Clock();
-  clock.start();
-  heroRollSpeed = (worldRollSpeed * worldRadius) / heroRadius / 5;
-  sphereHelper = new THREE.Spherical();
-  pathAngles = [1.52, 1.57, 1.62];
-
-  // Scene data
-  sceneHeight = window.innerHeight;
-  sceneWidth = window.innerWidth;
-  scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0xf0fff0, 0.14);
-
-  // Camera
-  camera = new THREE.PerspectiveCamera(60, sceneWidth / sceneHeight, 0.1, 1000);
-  camera.position.z = 6.5;
-  camera.position.y = 2.5;
-
-  // Renderer
-  renderer = new THREE.WebGLRenderer({ alpha: true });
-  renderer.setClearColor(0xfffafa, 1);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.setSize(sceneWidth, sceneHeight);
-  dom = document.getElementById("AdamContainer");
-  dom.appendChild(renderer.domElement);
-
-  // Individual Function Calls for geometries, animations and lighting
-  generateTrees();
-  generateWorld();
-  generateHero();
-  generateLighting();
-  generateExplosion();
-
-  window.addEventListener("resize", onWindowResize, false);
-  document.onkeydown = handleKeyPress;
-
-  // Score
-  scoreText = document.createElement("div");
-  scoreText.style.position = "absolute";
-  scoreText.style.width = 100;
-  scoreText.style.height = 100;
-  scoreText.style.top = 50 + "px";
-  scoreText.style.left = 10 + "px";
-  scoreText.innerHTML = "0";
-  document.body.appendChild(scoreText);
-}
-
-// Scene Related Functions
-function generateTrees() {
-  var maxTrees = 10;
-  var tree;
-  for (var i = 0; i < maxTrees; i++) {
-    tree = createTree();
-    totalTrees.push(tree);
+  checkCollision(obj1, obj2) {
+    const distance = obj1.position.distanceTo(obj2.position);
+    return distance < 0.8; // Collision threshold
   }
-}
 
-function generateWorld() {
-  var sides = 40;
-  var tiers = 40;
-  var sphereGeometry = new THREE.SphereGeometry(worldRadius, sides, tiers);
-  var sphereMaterial = new THREE.MeshStandardMaterial({
-    color: 0xfffafa,
-    flatShading: THREE.FlatShading
-  });
-  var vertexIndex;
-  var vertexVector = new THREE.Vector3();
-  var nextVertexVector = new THREE.Vector3();
-  var firstVertexVector = new THREE.Vector3();
-  var offset = new THREE.Vector3();
-  var currentTier = 1;
-  var lerpValue = 0.5;
-  var heightValue;
-  var maxHeight = 0.07;
+  updateScore() {
+    if (!this.gameRunning) return;
+    
+    this.scoreTime += 0.016; // Roughly 60fps
+    if (this.scoreTime >= 0.1) { // Update score every 0.1 seconds
+      this.score += 1;
+      this.scoreElement.textContent = `Score: ${this.score}`;
+      this.scoreTime = 0;
+    }
+  }
 
-  for (var j = 1; j < tiers - 2; j++) {
-    currentTier = j;
-    for (var i = 0; i < sides; i++) {
-      vertexIndex = currentTier * sides + 1;
-      vertexVector = sphereGeometry.vertices[i + vertexIndex].clone();
-      if (j % 2 !== 0) {
-        if (i === 0) {
-          firstVertexVector = vertexVector.clone();
+  gameLoop() {
+    if (!this.gameRunning) return;
+    
+    // Add floating animation to player
+    this.player.position.y = 0.5 + Math.sin(Date.now() * 0.005) * 0.1;
+    this.player.rotation.z = Math.sin(Date.now() * 0.003) * 0.1;
+    
+    // Smooth player movement
+    if (this.targetX !== undefined) {
+      this.player.position.x += (this.targetX - this.player.position.x) * 0.15;
+    }
+    
+    // Animate starfield
+    if (this.stars) {
+      this.stars.rotation.z += 0.001;
+      const positions = this.stars.geometry.attributes.position.array;
+      for (let i = 2; i < positions.length; i += 3) {
+        positions[i] += this.gameSpeed * 0.5;
+        if (positions[i] > 100) {
+          positions[i] = -300;
         }
-        nextVertexVector = sphereGeometry.vertices[i + vertexIndex + 1].clone();
-        if (i === sides - 1) {
-          nextVertexVector = firstVertexVector;
-        }
-        lerpValue = Math.random() * (0.75 - 0.25) + 0.25;
-        vertexVector.lerp(nextVertexVector, lerpValue);
       }
-      heightValue = Math.random() * maxHeight - maxHeight / 2;
-      offset = vertexVector
-        .clone()
-        .normalize()
-        .multiplyScalar(heightValue);
-      sphereGeometry.vertices[i + vertexIndex] = vertexVector.add(offset);
+      this.stars.geometry.attributes.position.needsUpdate = true;
     }
-  }
-
-  rollingGround = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  rollingGround.receiveShadow = true;
-  rollingGround.castShadow = false;
-  rollingGround.rotation.z = -Math.PI / 2;
-  scene.add(rollingGround);
-  rollingGround.position.y = -24;
-  rollingGround.position.z = 2;
-
-  var numTrees = 36;
-  var treeGap = 6.28 / 36;
-  for (var k = 0; k < numTrees; k++) {
-    addTree(false, k * treeGap, true);
-    addTree(false, k * treeGap, false);
-  }
-}
-
-function generateHero() {
-  var sphereGeometry = new THREE.DodecahedronGeometry(heroRadius, 1);
-  var sphereMaterial = new THREE.MeshStandardMaterial({
-    color: 0xe5f2f2,
-    flatShading: THREE.FlatShading
-  });
-  jump = false;
-  hero = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  hero.receiveShadow = true;
-  hero.castShadow = true;
-  scene.add(hero);
-  hero.position.y = heroBaseY;
-  hero.position.z = 4.8;
-  currLane = middleLane;
-  hero.position.x = currLane;
-}
-
-function generateLighting() {
-  var light = new THREE.HemisphereLight(0xfffafa, 0x000000, -0.9);
-  scene.add(light);
-
-  sun = new THREE.DirectionalLight(0xcdc1c5, 0.9);
-  sun.position.set(12, 6, -7);
-  sun.castShadow = true;
-  scene.add(sun);
-  sun.shadow.mapSize.width = 256;
-  sun.shadow.mapSize.height = 256;
-  sun.shadow.camera.near = 0.5;
-  sun.shadow.camera.far = 50;
-}
-
-function generateExplosion() {
-  particleGeometry = new THREE.Geometry();
-  for (var i = 0; i < particleCount; i++) {
-    var vertex = new THREE.Vector3();
-    particleGeometry.vertices.push(vertex);
-  }
-
-  var particleMaterial = new THREE.PointsMaterial({
-    color: 0xfffafa,
-    size: 0.2
-  });
-  particles = new THREE.Points(particleGeometry, particleMaterial);
-  particles.visible = false;
-  scene.add(particles);
-}
-
-function addTree(inPath, row, isLeft) {
-  var newTree;
-  if (inPath) {
-    if (totalTrees.length === 0) {
-      return;
+    
+    // Create obstacles periodically
+    if (Math.random() < 0.02) {
+      this.createObstacle();
     }
-    newTree = totalTrees.pop();
-    newTree.visible = true;
-    treesInView.push(newTree);
-    sphereHelper.set(
-      worldRadius - 0.3,
-      pathAngles[row],
-      -rollingGround.rotation.x + 4
-    );
-  } else {
-    newTree = createTree();
-    var forestAngle = 0;
-    if (isLeft) {
-      forestAngle = 1.68 + Math.random() * 0.1;
-    } else {
-      forestAngle = 1.47 + Math.random() * 0.1;
+    
+    this.updateObstacles();
+    this.updateScore();
+    
+    // Render the scene
+    this.renderer.render(this.scene, this.camera);
+    
+    // Continue the loop
+    requestAnimationFrame(() => this.gameLoop());
+  }
+
+  gameOver() {
+    this.gameRunning = false;
+    
+    // Show game over message
+    this.gameOverDiv = document.createElement('div');
+    this.gameOverDiv.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.95);
+      color: white;
+      padding: 40px 50px;
+      border-radius: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      font-family: 'Inter', Arial, sans-serif;
+      z-index: 2000;
+    `;
+    this.gameOverDiv.innerHTML = `
+      <div style="font-size: 32px; margin-bottom: 20px;">💥</div>
+      <h2 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 700; color: #ff4444;">Mission Failed!</h2>
+      <p style="margin: 0 0 15px 0; font-size: 20px; font-weight: 600; color: #00ff88;">Final Score: ${this.score}</p>
+      <p style="margin: 0; font-size: 16px; opacity: 0.8;">Press <span style="color: #ffff00; font-weight: 600;">R</span> to restart mission</p>
+    `;
+    document.body.appendChild(this.gameOverDiv);
+  }
+
+  restart() {
+    // Reset game state
+    this.score = 0;
+    this.gameRunning = true;
+    this.currentLane = 1;
+    this.scoreTime = 0;
+    
+    // Reset player position
+    this.player.position.set(this.lanes[this.currentLane], 0.25, 0);
+    
+    // Clear obstacles
+    this.obstacles.forEach(obstacle => this.scene.remove(obstacle));
+    this.obstacles = [];
+    
+    // Remove game over screen
+    if (this.gameOverDiv) {
+      document.body.removeChild(this.gameOverDiv);
+      this.gameOverDiv = null;
     }
-    sphereHelper.set(worldRadius - 0.3, forestAngle, row);
+    
+    // Update UI
+    this.scoreElement.textContent = 'Score: 0';
+    
+    // Restart game loop
+    this.gameLoop();
   }
 
-  newTree.position.setFromSpherical(sphereHelper);
-  var rollingGroundVector = rollingGround.position.clone().normalize();
-  var treeVector = newTree.position.clone().normalize();
-  newTree.quaternion.setFromUnitVectors(treeVector, rollingGroundVector);
-  newTree.rotation.x += Math.random() * ((2 * Math.PI) / 10) + -Math.PO / 10;
-  rollingGround.add(newTree);
-}
-
-function addTreeInPath() {
-  var laneOptions = [0, 1, 2];
-  var lane = Math.floor(Math.random() * 3);
-  addTree(true, lane);
-  laneOptions.splice(lane, 1);
-
-  if (Math.random() > 0.5) {
-    lane = Math.floor(Math.random() * 2);
-    addTree(true, laneOptions[lane]);
+  onWindowResize() {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 }
 
-function createTree() {
-  var sides = 8;
-  var tiers = 6;
-  var scalarMultiplier = Math.random() * (0.25 - 0.1) + 0.05;
-  var midPointVector = new THREE.Vector3();
-  var vertexVector = new THREE.Vector3();
-  var treeGeometry = new THREE.ConeGeometry(0.5, 1, sides, tiers);
-  var treeMaterial = new THREE.MeshStandardMaterial({
-    color: 0x33ff33,
-    flatShading: THREE.FlatShading
-  });
+// Initialize the game when Three.js is available
+console.log('Script loaded, checking for Three.js...');
 
-  var offset;
-  midPointVector = treeGeometry.vertices[0].clone();
-  var currentTier = 0;
-  var vertexIndex;
-
-  blowUpTree(treeGeometry.vertices, sides, 0, scalarMultiplier);
-  tightenTree(treeGeometry.vertices, sides, 1);
-  blowUpTree(treeGeometry.vertices, sides, 2, scalarMultiplier * 1.1, true);
-  tightenTree(treeGeometry.vertices, sides, 3);
-  blowUpTree(treeGeometry.vertices, sides, 4, scalarMultiplier * 1.2);
-  tightenTree(treeGeometry.vertices, sides, 5);
-
-  var treeTop = new THREE.Mesh(treeGeometry, treeMaterial);
-  treeTop.castShadow = true;
-  treeTop.receiveShadow = false;
-  treeTop.position.y = 0.9;
-  treeTop.rotation.y = Math.random() * Math.PI;
-
-  var treeTrunkGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5);
-  var trunkMaterial = new THREE.MeshStandardMaterial({
-    color: 0x886633,
-    flatShading: THREE.FlatShading
-  });
-  var treeTrunk = new THREE.Mesh(treeTrunkGeometry, trunkMaterial);
-  treeTrunk.position.y = 0.25;
-  var tree = new THREE.Object3D();
-  tree.add(treeTrunk);
-  tree.add(treeTop);
-  return tree;
-}
-
-function blowUpTree(vertices, sides, currentTier, scalarMultiplier, odd) {
-  var vertexIndex;
-  var vertexVector = new THREE.Vector3();
-  var midPointVector = vertices[0].clone();
-  var offset;
-
-  for (var i = 0; i < sides; i++) {
-    vertexIndex = currentTier * sides + 1;
-    vertexVector = vertices[i + vertexIndex].clone();
-    midPointVector.y = vertexVector.y;
-    offset = vertexVector.sub(midPointVector);
-    if (odd) {
-      if (i % 2 === 0) {
-        offset.normalize().multiplyScalar(scalarMultiplier / 6);
-        vertices[i + vertexIndex].add(offset);
-      } else {
-        offset.normalize().multiplyScalar(scalarMultiplier);
-        vertices[i + vertexIndex].add(offset);
-        vertices[i + vertexIndex].y =
-          vertices[i + vertexIndex + sides].y + 0.05;
-      }
-    } else {
-      if (i % 2 !== 0) {
-        offset.normalize().multiplyScalar(scalarMultiplier / 6);
-        vertices[i + vertexIndex].add(offset);
-      } else {
-        offset.normalize().multiplyScalar(scalarMultiplier);
-        vertices[i + vertexIndex].add(offset);
-        vertices[i + vertexIndex].y =
-          vertices[i + vertexIndex + sides].y + 0.05;
-      }
-    }
+if (typeof THREE !== 'undefined') {
+  console.log('Three.js is available, version:', THREE.REVISION);
+  
+  try {
+    const game = new InfiniteRunner();
+    window.game = game; // For debugging
+    console.log('Game started successfully!');
+  } catch (error) {
+    console.error('Failed to initialize game:', error);
+    document.body.innerHTML += `
+      <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                  color: red; font-size: 18px; text-align: center; 
+                  background: rgba(0,0,0,0.8); padding: 20px; border-radius: 10px;">
+        Game Error<br><small>${error.message}</small>
+      </div>`;
   }
-}
-
-function tightenTree(vertices, sides, currentTier) {
-  var vertexIndex;
-  var vertexVector = new THREE.Vector3();
-  var midPointVector = vertices[0].clone();
-  var offset;
-
-  for (var i = 0; i < sides; i++) {
-    vertexIndex = (currentTier % sides) + 1;
-    vertexVector = vertices[i + vertexIndex].clone();
-    midPointVector.y = vertexVector.y;
-    offset = vertexVector.sub(midPointVector);
-    offset.normalize().multiplyScalar(0.06);
-    vertices[i + vertexIndex].sub(offset);
-  }
-}
-
-// Logic Functions
-function treeLogic() {
-  var tree;
-  var positionVector = new THREE.Vector3();
-  var treeRemoval = [];
-
-  treesInView.forEach(function(el, index) {
-    tree = treesInView[index];
-    positionVector.setFromMatrixPosition(tree.matrixWorld);
-    if (positionVector.z > 6 && tree.visible) {
-      treeRemoval.push(tree);
-    } else {
-      if (positionVector.distanceTo(hero.position) <= 0.6) {
-        hasCollided = true;
-        explodeAnimation();
-      }
-    }
-  });
-
-  var fromWhere;
-  treeRemoval.forEach(function(el, index) {
-    tree = treeRemoval[index];
-    fromWhere = treesInView.indexOf(tree);
-    treesInView.splice(fromWhere, 1);
-    totalTrees.push(tree);
-    tree.visible = false;
-  });
-}
-
-function explosionLogic() {
-  if (!particles.visible) {
-    return;
-  }
-
-  for (var i = 0; i < particleCount; i++) {
-    particleGeometry.vertices[i].multiplyScalar(explosionPower);
-  }
-
-  if (explosionPower > 1.005) {
-    explosionPower -= 0.001;
-  } else {
-    particles.visible = false;
-  }
-
-  particleGeometry.verticesNeedUpdate = true;
-}
-
-function explodeAnimation() {
-  particles.position.set(hero.position.x, 2, 4.8);
-  for (var i = 0; i < particleCount; i++) {
-    var vertex = new THREE.Vector3();
-    vertex.set(
-      -0.2 + Math.random() * 0.4,
-      -0.2 + Math.random() * 0.4,
-      -0.2 + Math.random() * 0.4
-    );
-    particleGeometry.vertices[i] = vertex;
-  }
-
-  particleGeometry.verticesNeedUpdate = true;
-}
-
-// Control Functions and Resizing
-function onWindowResize() {
-  sceneHeight = window.innerHeight;
-  sceneWidth = window.innerWidth;
-  renderer.setSize(sceneWidth, sceneHeight);
-  camera.aspect = sceneWidth / sceneHeight;
-  camera.updateProjectionMatrix();
-}
-
-function handleKeyPress(keyEvent) {
-  if (jump) {
-    return;
-  }
-
-  var valid = true;
-  switch (keyEvent.keyCode) {
-    case 37: // Left Arrow
-      if (currLane === middleLane) {
-        currLane = leftLane;
-      } else if (currLane === rightLane) {
-        currLane = middleLane;
-      } else {
-        valid = false;
-      }
-      break;
-    case 38: // Up Arrow
-      bounceVal = 0.1;
-      jump = true;
-      valid = false;
-      break;
-    case 39: // Right Arrow
-      if (currLane === middleLane) {
-        currLane = rightLane;
-      } else if (currLane === leftLane) {
-        currLane = middleLane;
-      } else {
-        valid = false;
-      }
-      break;
-    default:
-      break;
-  }
-
-  if (valid) {
-    jump = true;
-    bounceVal = 0.05;
-  }
+} else {
+  console.error('Three.js is not available');
+  document.body.innerHTML += `
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                color: red; font-size: 18px; text-align: center; 
+                background: rgba(0,0,0,0.8); padding: 20px; border-radius: 10px;">
+      Three.js not loaded<br><small>Check console for details</small>
+    </div>`;
 }
